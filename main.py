@@ -142,16 +142,6 @@ def race(participants, track_length, number_bet):
                 break
 
 
-def once_again(display):
-
-    select = display.textinput(title="Once again?",
-                               prompt="Enter 'Y' to play again or hit any other key to quit").lower()
-    if select == "y":
-        return True
-    else:
-        return False
-
-
 def reset_turtles(participants):
     """Resets the input list of objects"""
     for turtle in participants:
