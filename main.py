@@ -1,6 +1,5 @@
 from turtle import Screen, Turtle
-from random import choice
-from random import randint
+from random import choice, randint
 
 
 def random_hexer():
@@ -22,10 +21,12 @@ def racer_number(display):
 
     while enroll:
         try:
-            racers = int(display.numinput(title="Racing Menu",prompt="How many racers should attend?"))
+            chosen_racer_number = int(display.numinput(title="Racing Menu",
+                                                       prompt="How many racers should attend?",
+                                                       default=2))
 
-            if 2 <= racers <= 10:
-                return racers
+            if 2 <= chosen_racer_number <= 10:
+                return chosen_racer_number
             else:
                 print("Sorry, but you need a number between 2 and 10")
         except TypeError:
@@ -42,7 +43,10 @@ def turtle_racers(number_of_racers):
         new_racer.shape("turtle")
         new_racer.color(random_hexer())
         new_racer.penup()
-        new_racer.sety(-100+i*50)
+        new_racer.sety(-100 + i * 50)
+        new_racer.setx(-250)
+        new_racer.number = i + 1
+        new_racer.write(str(i + 1))
         new_racer.setx(-200)
         new_racer.showturtle()
         racer_list.append(new_racer)
@@ -58,9 +62,11 @@ def strecke(participants, turf):
 
     while track_building:
         try:
-            track_length = int(turf.numinput(title="Track Building", prompt="How long is the line?"))
+            track_length = int(turf.numinput(title="Track Building",
+                                             prompt="How long is the line?",
+                                             default=250))
 
-            if 100 <= track_length <= 500:
+            if 100 <= track_length <= 800:
                 upper = Turtle()
                 upper.hideturtle()
                 upper.penup()
@@ -94,20 +100,75 @@ def strecke(participants, turf):
                 return track_length - 220
 
             else:
-                print("Sorry, but you need a number between 100 and 500")
+                print("Sorry, but you need a number between 100 and 800")
         except TypeError:
-            print("Sorry, but you need a number between 100 and 500")
+            print("Sorry, but you need a number between 100 and 800")
+
+
+def bet_the_winner(number_of_racers, display):
+    """Manages the bet of the player, returns an int"""
+    betting = True
+
+    while betting:
+        try:
+            bet_racer_number = int(display.numinput(title="Betting Menu",
+                                                    prompt="Who will win?",
+                                                    default=randint(1, number_of_racers)))
+
+            if 1 <= bet_racer_number <= number_of_racers:
+                return bet_racer_number
+            else:
+                print("Sorry, but you need a number between 1 and " + str(number_of_racers))
+        except TypeError:
+            print("Sorry, but you need a number between 1 and " + str(number_of_racers))
+
+
+def race(participants, track_length, number_bet):
+    """The race itself, turtles run, and the winner will be decided"""
+    race_in_progress = True
+
+    while race_in_progress:
+        for turtle in participants:
+            move = randint(1, 10)
+            turtle.forward(move)
+
+            if int(turtle.pos()[0]) > int(track_length):
+                print("Turtle " + str(turtle.number) + " won the race")
+                if turtle.number == number_bet:
+                    print("Congratulation, you bet on the right turtle!")
+                else:
+                    print("What a pity, you bet on the wrong turtle!")
+                race_in_progress = False
+                break
+
+
+def once_again(display):
+
+    select = display.textinput(title="Once again?",
+                               prompt="Enter 'Y' to play again or hit any other key to quit").lower()
+    if select == "y":
+        return True
+    else:
+        return False
+
+
+def reset_turtles(participants):
+    """Resets the input list of objects"""
+    for turtle in participants:
+        turtle.reset()
 
 
 screen = Screen()
-screen.setup(800, 500)
+screen.setup(800, 800)
 
 racers = racer_number(screen)
 turtles = turtle_racers(racers)
 race_length = strecke(turtles, screen)
+bet = bet_the_winner(racers, screen)
 
-# TODO Make a bet on the winning turtle.
-# TODO Random steps between 5 and 10
-# TODO First Turtle reaches x = track length == GameOver, we have a winner.
+race(participants=turtles,
+     track_length=race_length,
+     number_bet=bet)
 
+print("Thank you for playing!")
 screen.exitonclick()
